@@ -1,5 +1,5 @@
 //
-// Created by ariel on 9/1/20.
+// Created by ariel on 9/3/20.
 //
 
 #include "database.h"
@@ -7,13 +7,8 @@
 #include <cstdio>
 #include <iostream>
 
-const char* getLibVersion()
-{
-    return sqlite3_libversion();
-}
-
 int database::openDB(){
-    rc = sqlite3_open(dbName, &db);
+    rc = sqlite3_open(dbName.c_str(), &db);
     return rc;
 }
 
@@ -22,22 +17,27 @@ int database::closeDB(){
     return rc;
 }
 
-void database::generateQCreateTable(char qry [], char *tableName, char* columns){
-    sprintf(qry, "CREATE TABLE %s (%s);", tableName, columns);
+std::string database::generateQCreateTable(std::string tableName, std::string columns){
+    std::string qry = "CREATE TABLE "+tableName + " (" + columns + ");" ;
+    return qry;
 }
 
-void database::generateQDropTable(char qry [],char *tableName){
-    sprintf(qry, "DROP TABLE %s;", tableName);
+std::string database::generateQDropTable(std::string tableName){
+    std::string qry = "DROP TABLE " + tableName +";";
+    return qry;
 }
 
-void database::generateQShowInfo(char qry [],char *tableName){
-    sprintf(qry, "SELECT * FROM %s;", tableName);
+std::string  database::generateQShowInfo(std::string tableName){
+    std::string qry = "SELECT * FROM " + tableName + ";";
+    return qry;
 }
 
-void database::generateQInsertData(char qry [], char *tableName, char* dateTime, float temperature, float humidity, float pressure){
-    //sprintf(qry, "INSERT INTO %s (number) values (%d);", tableName, number);
-    sprintf(qry,"INSERT INTO %s(dt, temperature, humidity, pressure) values ('%s', %.2f, %.2f, %.2f);", tableName,
-            dateTime, temperature, humidity,  pressure);
+std::string  database::generateQInsertData(std::string tableName, int64_t dateTime, float temperature, float humidity, float pressure){
+    //std::string qry = "INSERT INTO " + tableName + " (number) values (" + std::to_string(number) + ");";
+    std::string qry = "INSERT INTO " + tableName + " (dt, temperature, humidity, pressure) values (" +
+            std::to_string(dateTime) + ", "+ std::to_string(temperature)+ ", "+ std::to_string(humidity)
+            + ", "+ std::to_string(pressure)+");";
+    return qry;
 }
 
 void database::checkOK(){
@@ -49,29 +49,22 @@ void database::checkOK(){
     }
 }
 
-int database::insertQ(char qry[]){
-    rc =  sqlite3_exec(db, qry, 0, 0, &zErrMsg);
+int database::insertQ(std::string qry){
+    rc =  sqlite3_exec(db, qry.c_str(), 0, 0, &zErrMsg);
     return rc;
 }
 
-void database::create_table(char qry[], char *tableName, char* columns){
-    generateQCreateTable(qry, tableName, columns);
+void database::create_table(std::string tableName, std::string columns){
+    std::string qry = generateQCreateTable(tableName, columns);
+    std::cout << "qry = " << qry << std::endl;
     insertQ(qry);
-    if (rc=SQLITE_OK){
-        std::cout << "Table was successfully created" << std::endl;
-    }else{
-        //std::cout << "Table was NOT created because it already exists" << std::endl;
-    }
 }
 
-void database::insertData(char qry[], char *tableName, char* dateTime, float temperature, float humidity, float pressure){
-    generateQInsertData(qry, tableName, dateTime,  temperature,  humidity,  pressure);
+void database::insertData(std::string tableName, int64_t dateTime, float temperature, float humidity, float pressure){
+    std::string qry = generateQInsertData(tableName, dateTime, temperature, humidity, pressure);
     insertQ(qry);
-    //checkOK();
 }
 
-void database::showData(char qry[], char *tableName){
-    generateQShowInfo(qry, tableName);
-    insertQ(qry);
-    //checkOK();
+void database::showData(std::string tableName){
+    std::string qry = generateQShowInfo(tableName);
 }

@@ -192,7 +192,6 @@ public:
     void setStatus(uint8_t);
     void setControl(uint8_t);
     void setControlHumidity(uint8_t);
-
     void printData();
 };
 

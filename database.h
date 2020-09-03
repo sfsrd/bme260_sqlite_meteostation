@@ -4,25 +4,25 @@
 
 #ifndef BME280_DATABASE_H
 #define BME280_DATABASE_H
-#include <sqlite3.h>
+#include <string>
+#include "sqlite3.h"
 
 class database {
-
 private:
     sqlite3* db;
-    char *dbName;
+    std::string dbName;
     int rc;
     char *zErrMsg;
 
 public:
-    database(sqlite3* db, char *dbName){
+    database(sqlite3* db, std::string dbName){
         this->db=db;
         this->dbName=dbName;
         this->rc = 0;
         this->zErrMsg="null";
     }
 
-    char* getDBName(){
+    std::string getDBName(){
         return dbName;
     }
 
@@ -38,19 +38,25 @@ public:
     int closeDB();
 
     //generating query
-    void generateQCreateTable(char qry [], char *tableName, char *columns);
-    void generateQDropTable(char qry [],char *tableName);
-    void generateQShowInfo(char qry [],char *tableName);
-    void generateQInsertData(char qry [], char *tableName, char* dateTime, float temperature, float humidity, float pressure);
-
-    int insertQ(char qry[]);
     void checkOK();
-    void create_table(char qry[], char *tableName, char *columns);
-    void showData(char *qry, char *tableName);
-    void insertData(char *qry, char *tableName, char *dateTime, float temperature, float humidity, float pressure);
+
+    std::string generateQCreateTable(std::string tableName, std::string columns);
+
+    int insertQ(std::string qry);
+
+    void create_table(std::string tableName, std::string columns);
+
+    void showData(std::string tableName);
+
+    std::string generateQShowInfo(std::string tableName);
+
+    std::string generateQDropTable(std::string tableName);
+
+    std::string
+    generateQInsertData(std::string tableName, int64_t dateTime, float temperature, float humidity, float pressure);
+
+    void insertData(std::string tableName, int64_t dateTime, float temperature, float humidity, float pressure);
 };
 
-const char* getLibVersion();
 
-
-#endif //TEST_DATABASE_H
+#endif //BME280_DATABASE_H

@@ -50,17 +50,16 @@ int main() {
     int devId = BME280_I2C_ADDRESS;
 
     sqlite3* db;
-    char *tableName = "Info_sensor";
-    char *columns = "id INTEGER PRIMARY KEY AUTOINCREMENT, dt TEXT, temperature REAL, humidity REAL, pressure REAL";
-    char qry[500];
-    int rc;
-
-    std::string currentDate;
-    char cDate[100];
+    std::string tableName = "Info_sensor";
+    std::string columns = "id INTEGER PRIMARY KEY AUTOINCREMENT, dt INTEGER, temperature REAL, humidity REAL, pressure REAL";
+    int64_t now;
+    std::string qry;
+    now = std::chrono::duration_cast<std::chrono::milliseconds>(std::chrono::system_clock::now().time_since_epoch()).count();
+    std::cout<<"now = "<< now <<std::endl;
 
     database DB(db, "sensor_data.db");
     DB.openDB();
-    DB.create_table(qry, tableName, columns);
+    DB.create_table(tableName, columns);
 
    try {
          BME280 * bme280 = new BME280(device, devId, i2c_init, i2c_read, i2c_write);
@@ -81,13 +80,9 @@ int main() {
          while (true) {
              BMP280Data * bme280Data = bme280->getBMP280Data();
              printData(*bme280Data);
-             currentDate = getCurrentDate();
-             strcpy(cDate, currentDate.c_str());
-             DB.generateQInsertData(qry, tableName, cDate, bme280Data->getTemperature(),bme280Data->getHumidity(),
-                                    bme280Data->getPressure());
-             std::cout<<"qry = "<< qry <<std::endl;
-             rc = DB.insertQ(qry);
-             std::cout<<"rc = "<< rc <<std::endl;
+             now = std::chrono::duration_cast<std::chrono::milliseconds>(std::chrono::system_clock::now().time_since_epoch()).count();
+             DB.insertData(tableName, now, bme280Data->getTemperature(),bme280Data->getHumidity(),
+                           bme280Data->getPressure());
              sleep(5);
          }
 
@@ -95,7 +90,6 @@ int main() {
          printf("%s\n", e.what());
      }
 
-    DB.checkOK();
     DB.closeDB();
     return 0;
 }
