@@ -128,7 +128,8 @@ typedef int (*i2c_init_func_def)();
 
 class BME280 {
 private:
-    char * device;
+    std::string device;
+    //char * device;
     int devId;
     int fd;
     uint8_t chipId;
@@ -155,7 +156,8 @@ private:
     BME280RawData * getRawData();
 
 public:
-    BME280(const char*, int, i2c_init_func_def, i2c_read_func_def, i2c_write_func_def);
+    BME280(std::string, int, i2c_init_func_def, i2c_read_func_def, i2c_write_func_def);
+    //BME280(const char*, int, i2c_init_func_def, i2c_read_func_def, i2c_write_func_def);
     BME280(int);
     virtual ~BME280();
 

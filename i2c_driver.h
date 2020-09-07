@@ -11,16 +11,18 @@
 #include <linux/i2c-dev.h>
 #include <stdio.h>
 #include <stdint.h>
+#include <string>
 
 #define I2C_ADAPTER    "/dev/i2c-1"
 
 class I2C_Driver{
 private:
     int fd;
-    char *i2c_driver_id;
+    std::string i2c_driver_id;
 
 public:
-    I2C_Driver(char *i2c_driver_id);
+
+    I2C_Driver(std::string i2c_driver_id);
 
     int write_buffer_i2c(uint8_t slave_addr, uint8_t reg, uint8_t data);
 

@@ -15,6 +15,7 @@
 #include "date.h"
 #include "database.h"
 
+
 using namespace std::chrono;
 
 int i2c_init();
@@ -46,7 +47,8 @@ std::string getCurrentDate(){
 }
 
 int main() {
-    char *device = "/dev/i2c-1";
+    std::string device = "/dev/i2c-1";
+    //char *device = "/dev/i2c-1";
     int devId = BME280_I2C_ADDRESS;
 
     sqlite3* db;
@@ -67,7 +69,7 @@ int main() {
          bme280->reset();
 
          if (fd < 0) {
-             printf("Device not found");
+             std::cout<<"Device not found" <<std::endl;
              return -1;
          }
 
@@ -83,11 +85,12 @@ int main() {
              now = std::chrono::duration_cast<std::chrono::milliseconds>(std::chrono::system_clock::now().time_since_epoch()).count();
              DB.insertData(tableName, now, bme280Data->getTemperature(),bme280Data->getHumidity(),
                            bme280Data->getPressure());
+             DB.checkOK();
              sleep(5);
          }
 
      } catch (std::exception & e) {
-         printf("%s\n", e.what());
+       std::cout<< e.what() <<std::endl;
      }
 
     DB.closeDB();

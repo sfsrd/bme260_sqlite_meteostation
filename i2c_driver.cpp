@@ -3,10 +3,15 @@
 //
 
 #include "i2c_driver.h"
-
-#include "i2c_driver.h"
+/*
 
 I2C_Driver::I2C_Driver(char *i2c_driver_id) {
+    this->i2c_driver_id = i2c_driver_id;
+    this->fd = -1;
+}
+*/
+
+I2C_Driver::I2C_Driver(std::string i2c_driver_id) {
     this->i2c_driver_id = i2c_driver_id;
     this->fd = -1;
 }
@@ -15,7 +20,7 @@ I2C_Driver::I2C_Driver(char *i2c_driver_id) {
 int I2C_Driver::open_i2c_file() {
     if (fd > 0)
         return fd;
-    fd = open(i2c_driver_id, O_RDWR);
+    fd = open(i2c_driver_id.c_str(), O_RDWR);
     if (fd < 0)
         return -1;
     return fd;

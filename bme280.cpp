@@ -40,10 +40,9 @@ uint16_t BME280::readU16(uint8_t reg) {
     return (uint16_t) read16(reg);
 }
 
-BME280::BME280(const char* device, int devId, i2c_init_func_def i2c_init, i2c_read_func_def i2c_read, i2c_write_func_def i2c_write):
+BME280::BME280(std::string device, int devId, i2c_init_func_def i2c_init, i2c_read_func_def i2c_read, i2c_write_func_def i2c_write):
         fd(0), chipId(0), bmp280CalibrationData(0), bmp280RawData(0) {
-    this->device = new char[strlen(device)];
-    strcpy(this->device, device);
+    this->device = device;
     this->devId = devId;
     this->i2c_init = i2c_init;
     this->i2c_read = i2c_read;
@@ -58,15 +57,14 @@ BME280::BME280(int devId) :
 BME280::~BME280() {
     delete bmp280CalibrationData;
     delete bmp280RawData;
-    delete[] device;
+    //delete[] device;
 }
 
 int BME280::init() {
     int fd = i2c_init();
     if (fd < 0) {
-        char buffer[256];
-        sprintf(buffer, "Device not found: device ID = %d", devId);
-        throw std::logic_error(buffer);
+        std::cout << "Device not found: device ID = " << devId << std::endl;
+        //throw std::logic_error(buffer);
     }
     this->fd = fd;
     uint8_t chipId = getChipId();
@@ -75,9 +73,8 @@ int BME280::init() {
             this->chipId = chipId;
             break;
         default: {
-            char buffer[256];
-            sprintf(buffer, "Device Chip ID error: chip ID = %d", chipId);
-            throw std::logic_error(buffer);
+            std::cout << "Device not found: chip ID = " << chipId << std::endl;
+           // throw std::logic_error(buffer);
         }
     }
     if (bmp280CalibrationData) {

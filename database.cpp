@@ -33,7 +33,6 @@ std::string  database::generateQShowInfo(std::string tableName){
 }
 
 std::string  database::generateQInsertData(std::string tableName, int64_t dateTime, float temperature, float humidity, float pressure){
-    //std::string qry = "INSERT INTO " + tableName + " (number) values (" + std::to_string(number) + ");";
     std::string qry = "INSERT INTO " + tableName + " (dt, temperature, humidity, pressure) values (" +
             std::to_string(dateTime) + ", "+ std::to_string(temperature)+ ", "+ std::to_string(humidity)
             + ", "+ std::to_string(pressure)+");";
@@ -42,10 +41,11 @@ std::string  database::generateQInsertData(std::string tableName, int64_t dateTi
 
 void database::checkOK(){
     if( rc != SQLITE_OK ) {
-        fprintf(stderr, "SQL error: %s\n", zErrMsg);
+        std::cout << "SQL error: " << zErrMsg << std::endl;
         sqlite3_free(zErrMsg);
     } else {
-        fprintf(stdout, "Operation done successfully\n");
+        std::cout << "Operation done successfully" << std::endl;
+        //fprintf(stdout, "Operation done successfully\n");
     }
 }
 
